@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 
@@ -38,14 +38,15 @@ class CategoriesController extends Controller
     }
 
 
-    public function show($id)
+    public function show(Category $category)
     {
+        return $category;
     }
 
 
-    public function edit($id)
+    public function edit(Category $category)
     {
-        $viewBag['category'] = Category::findOrFail($id);
+        $viewBag['category'] = $category;
         return view('categories.edit', $viewBag);
     }
 
@@ -61,18 +62,20 @@ class CategoriesController extends Controller
 
             flash('Category Update Successfully ')->success();
             return redirect()->route('categories.index');
-            
         } catch (\Throwable $th) {
             throw $th;
         }
     }
 
 
-    public function destroy($id)
+    public function destroy(Category $category)
     {
-        $category = Category::findOrFail($id);
-        $category->delete();
-        flash('Category Delete Successfully ')->success();
-        return redirect()->route('categories.index');
+        try {
+            $category->delete();
+            flash('Category Delete Successfully ')->success();
+            return redirect()->route('categories.index');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }
