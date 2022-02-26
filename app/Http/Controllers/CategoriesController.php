@@ -6,6 +6,7 @@ use App\Models\Category;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 
 class CategoriesController extends Controller
 {
@@ -49,21 +50,21 @@ class CategoriesController extends Controller
     }
 
 
-    public function update(Request $request, $id)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $validated = $request->validate([
-            'name' => 'required|min:2|max:50|unique:categories,name,' . $id
-        ]);
-        // dd($request);
-        
-        $category = Category::findOrFail($id);
-        $category->name = $request->name;
-        if ($category->isDirty()) {
-            $category->update();
+        try {
+            $category->name = $request->name;
+
+            if ($category->isDirty()) {
+                $category->update();
+            }
+
+            flash('Category Update Successfully ')->success();
+            return redirect()->route('categories.index');
+            
+        } catch (\Throwable $th) {
+            throw $th;
         }
-        
-        flash('Category Update Successfully ')->success();
-        return redirect()->route('categories.index');
     }
 
 
